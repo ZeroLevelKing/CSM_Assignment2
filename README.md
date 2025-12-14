@@ -77,7 +77,7 @@
 ```
 CSM_Assignment2/
 ├── README.md                # 项目说明文档
-├── Assignment_discription/  # 作业详细说明和图片
+├── Assignment2.pdf          # 作业详细说明
 ├── report/                  # 实验报告 (LaTeX)
 │   └── report.tex
 ├── result/                  # 结果输出目录

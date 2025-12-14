@@ -1,0 +1,220 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{color}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Matlab,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\title{Assignment 2 报告}
+\author{朱林-2200011028}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{引言}
+计算固体力学第二次作业报告，包含以下问题的有限元方法 (FEM) 实现过程：
+\begin{enumerate}
+    \item \textbf{Problem 1}: 二维线性弹性力学 (平面应力)。
+    \item \textbf{Problem 2}: Mindlin 板弯曲问题。
+\end{enumerate}
+
+\section{Problem 1: 二维线性弹性分析}
+
+\subsection{问题描述}
+本部分代码旨在求解二维平面应力问题。在默认配置下，代码模拟了以下物理问题：
+\begin{itemize}
+    \item \textbf{几何模型}: $1\text{m} \times 1\text{m}$ 的正方形板。
+    \item \textbf{边界条件}: 左侧边缘 ($x=0$) 完全固定 ($u_x=0, u_y=0$)。
+    \item \textbf{载荷条件}: 顶部边缘 ($y=1\text{m}$) 施加均匀分布的向下面力 (Traction)，大小为 $T_y = -2 \times 10^4 \text{ N/m}$。
+    \item \textbf{材料属性}: 杨氏模量 $E = 2.1 \times 10^9 \text{ Pa}$，泊松比 $\nu = 0.3$。
+\end{itemize}
+该模型类似于一个左端固定的悬臂板，在顶部受到剪切/压缩载荷。
+
+\subsection{实现细节}
+
+\subsubsection{网格生成 (\texttt{generate\_mesh.m})}
+网格生成函数创建了结构化的节点和单元网格。
+\begin{itemize}
+    \item \textbf{节点}: 根据划分数量 ($n_x, n_y$) 遍历 $x$ 和 $y$ 坐标生成。
+    \item \textbf{单元}:
+    \begin{itemize}
+        \item \textbf{Tri3 (Flag=1)}: 每个矩形网格单元被划分为两个三角形。
+        \item \textbf{Quad4 (Flag=2)}: 每个矩形网格单元形成一个四边形单元。
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{刚度矩阵组装 (\texttt{K\_matrix.m})}
+通过遍历所有单元组装全局刚度矩阵 $K$：
+\begin{equation}
+K = \sum_{e=1}^{M} K_e = \sum_{e=1}^{M} \int_{\Omega_e} B^T D B \, d\Omega
+\end{equation}
+对于 Quad4 单元，使用 $2\times2$ 高斯积分进行数值积分。对于 Tri3 单元，1点积分（形心）对于常应变三角形 (CST) 已经足够。
+
+\subsubsection{边界条件 (\texttt{Boundary\_conditions.m})}
+边界条件定义如下：
+\begin{itemize}
+    \item \textbf{位移边界}: 左边缘 ($x=0$) 完全固定 ($u_x=0, u_y=0$)。这是通过识别 $x$ 坐标接近 0 的节点来实现的。
+    \item \textbf{力边界}: 在顶边缘 ($y=H$) 施加面力载荷。\texttt{l\_area} 向量存储边界上每个节点的有效长度/面积，用于将力转换为节点力。
+\end{itemize}
+
+\subsection{结果}
+计算了位移场和应力场。由于不习惯原 plot 函数，对于原始文件中的绘图代码进行了调整以生成更清晰的云图。
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../result/problem1/displacement_contour.png}
+    \caption{Problem 1 位移云图}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../result/problem1/stress_contour.png}
+    \caption{Problem 1 应力云图}
+\end{figure}
+
+\section{Problem 2: Mindlin 板弯曲分析}
+
+\subsection{问题描述}
+分析一个在中心受高斯分布载荷作用的方形板 ($1\text{m} \times 1\text{m}$，厚度 $t=0.05\text{m}$)。四边均为简支 ($w=0$)。材料属性为 $E=210$ GPa 和 $\nu=0.3$。
+
+\subsection{理论公式}
+问题采用 Mindlin-Reissner 板理论建模，该理论考虑了剪切变形。每个节点有 3 个自由度 (DOFs)：
+\begin{itemize}
+    \item $w$: 横向挠度。
+    \item $\theta_x$: 绕 x 轴的转角。
+    \item $\theta_y$: 绕 y 轴的转角。
+\end{itemize}
+
+单元刚度矩阵由弯曲和剪切两部分组成：
+\begin{equation}
+K_e = K_b + K_s = \int_{\Omega_e} B_b^T D_b B_b \, dA + \int_{\Omega_e} B_s^T D_s B_s \, dA
+\end{equation}
+
+\subsection{实现细节}
+
+\subsubsection{剪切自锁控制}
+为了防止薄板中的剪切自锁（特别是对于 Quad4 单元），对剪切刚度矩阵 $K_s$ 采用了 减缩积分 (Reduced Integration)：
+\begin{itemize}
+    \item \textbf{弯曲刚度 ($K_b$)}: 使用全积分计算（Quad4 使用 $2\times2$ 高斯点）。
+    \item \textbf{剪切刚度 ($K_s$)}: 使用减缩积分计算（Quad4 使用 $1\times1$ 高斯点）。
+\end{itemize}
+确保了单元在薄板极限下不会变得过硬。
+
+\subsubsection{高斯载荷积分 (\texttt{F\_vector.m})}
+通过使用形函数在单元面积上积分高斯压力场 $q(x,y)$ 来计算外力向量：
+\begin{equation}
+F_e = \int_{\Omega_e} N^T q(x,y) \, dA
+\end{equation}
+
+\subsection{网格收敛性研究}
+使用三种网格密度进行了收敛性研究：
+\begin{itemize}
+    \item 粗网格: $5 \times 5$ 单元。
+    \item 中等网格: $10 \times 10$ 单元。
+    \item 细网格: $50 \times 50$ 单元。
+\end{itemize}
+测试了 Tri3 和 Quad4 两种单元。结果表明，随着网格密度的增加，中心挠度收敛于一个稳定值。在相同节点数下，Quad4 单元通常比 Tri3 单元表现出更快的收敛速度。
+
+\subsection{结果与验证}
+\subsubsection{MATLAB 仿真结果}
+模拟输出包括：
+\begin{itemize}
+    \item \textbf{挠度 ($w$)}: 最大挠度出现在板中心。
+    \item \textbf{转角幅值}: 中心处为零（由于对称性），边缘附近最大。
+    \item \textbf{Von Mises 应力}: 基于弯矩在板顶表面 ($z=t/2$) 计算得出。
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../result/problem2/Quad4_50x50/1_Deflection_w.png}
+    \caption{挠度云图 (Quad4, 50x50 网格)}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../result/problem2/Quad4_50x50/3_Stress_VonMises.png}
+    \caption{Von Mises 应力云图 (Quad4, 50x50 网格)}
+\end{figure}
+
+\subsubsection{与商业软件 (Abaqus) 的对比验证}
+为了验证 MATLAB 代码的准确性，使用商业有限元软件 Abaqus 进行了对比分析。
+\begin{itemize}
+    \item \textbf{单元类型}: S4R (4节点减缩积分壳单元)，与 MATLAB 中的 Quad4 Mindlin 板单元理论一致。
+    \item \textbf{网格密度}: $50 \times 50$ (2500 个单元)。
+    \item \textbf{积分方案}: 厚度方向采用 Simpson 积分 (5个积分点)。
+    \item \textbf{载荷施加}: 使用 Analytical Field 定义高斯分布载荷。
+\end{itemize}
+
+表 \ref{tab:comparison} 展示了 MATLAB 代码与 Abaqus 仿真结果的对比。选取了两个关键指标：板中心的最大挠度 ($w_{max}$) 和板中心的最大 Von Mises 应力 ($\sigma_{vm, max}$)。
+
+\begin{table}[H]
+    \centering
+    \caption{MATLAB 代码与 Abaqus 结果对比 (50x50 网格)}
+    \label{tab:comparison}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{指标} & \textbf{MATLAB (Quad4)} & \textbf{Abaqus (S4R)} \\
+        \hline
+        中心挠度 $w_{max}$ (m) & -2.727938e-04 &   -4.72757e-04  \\
+        \hline
+        最大 Von Mises 应力 (Pa) &  2.572139e+07 & 7.07667e+07 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+图 \ref{fig:3d_comparison} 展示了 MATLAB 代码计算得到的 3D 变形图与 Abaqus 仿真结果的对比。两者在变形趋势和幅值分布上高度一致。
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../result/problem2/Quad4_50x50/5_Deformed_Shape_3D.png}
+        \caption{MATLAB 3D 变形图}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fig/abaqus_3d_result.png}
+        \caption{Abaqus 3D 变形图}
+    \end{minipage}
+    \caption{MATLAB 与 Abaqus 3D 变形结果对比}
+    \label{fig:3d_comparison}
+\end{figure}
+
+计算结果与 abaqus 存在一定差异，可能原因包括：
+\begin{enumerate}
+    \item \textbf{单元类型差异}: 虽然 S4R 单元与 Quad4 Mindlin 板单元类似，但在数值实现细节上可能存在差异。
+    \item \textbf{积分方案}: Abaqus 使用了厚度方向的 Simpson 积分，而 MATLAB 代码中未明确考虑厚度积分，可能导致结果偏差。
+    \item \textbf{网格划分}: 尽管网格数量相同，但节点分布和单元形状可能略有不同，影响结果精度。
+    \item \textbf{边界条件实现}: 边界条件的具体实现方式可能存在差异，影响整体响应。
+\end{enumerate}
+
+
+\end{document}

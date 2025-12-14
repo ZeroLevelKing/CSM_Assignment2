@@ -76,7 +76,11 @@ flag=1;   % 1: triangular element;   2: quadrilateral element.
     h=10; % amplification factor
     
     % Create result directory if it doesn't exist
-    result_dir = fullfile(pwd, 'result');
+    % Output to ../../result/problem1 relative to this script
+    current_file_path = mfilename('fullpath');
+    [current_dir, ~, ~] = fileparts(current_file_path);
+    result_dir = fullfile(current_dir, '..', '..', 'result', 'problem1');
+    
     if ~exist(result_dir, 'dir')
         mkdir(result_dir);
     end

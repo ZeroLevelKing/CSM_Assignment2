@@ -79,8 +79,10 @@ for type_idx = 1:length(element_types)
         
         % 8. Save Results
         case_name = sprintf('%s_%dx%d', type_str, nx, ny);
-        % Save results to ../result relative to src folder
-        result_dir = fullfile(fileparts(pwd), 'result', case_name);
+        % Save results to ../../result/problem2 relative to this script
+        current_file_path = mfilename('fullpath');
+        [current_dir, ~, ~] = fileparts(current_file_path);
+        result_dir = fullfile(current_dir, '..', '..', 'result', 'problem2', case_name);
         
         if ~exist(result_dir, 'dir')
             mkdir(result_dir);

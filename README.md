@@ -8,8 +8,6 @@
 1.  **Problem 1**: 二维线性弹性力学分析 (平面应力/应变)。
 2.  **Problem 2**: Mindlin 板弯曲分析 (考虑剪切变形的中厚板)。
 
-每个问题都拥有独立的源代码目录 (`src/`) 和结果输出目录 (`result/`)。
-
 ---
 
 ## Problem 1: 二维线性弹性分析 (2D Linear Elasticity)
@@ -27,13 +25,13 @@
     *   变形前后网格对比。
 
 ### 如何运行
-1.  打开 MATLAB 并进入 `problem1/src/` 目录。
+1.  打开 MATLAB 并进入 `src/problem1/` 目录。
 2.  打开 `main.m` 文件。
 3.  (可选) 修改参数：
     *   设置 `flag = 1` 使用三角形单元，或 `flag = 2` 使用四边形单元。
     *   在 `generate_mesh.m` 中修改 `nx`, `ny` 以调整网格密度。
 4.  运行 `main.m`。
-5.  结果将保存在 `problem1/result/` 目录下。
+5.  结果将保存在 `result/problem1/` 目录下。
 
 ---
 
@@ -51,12 +49,12 @@
 *   **边界条件**: 四边简支 (Pinned edges, $w=0$)。
 
 ### 如何运行
-1.  打开 MATLAB 并进入 `problem2/src/` 目录。
+1.  打开 MATLAB 并进入 `src/problem2/` 目录。
 2.  运行 `main.m`。
 3.  程序将自动执行**网格收敛性研究**：
     *   依次运行 Tri3 和 Quad4 单元。
     *   自动测试不同的网格密度 (如 5x5, 10x10, 50x50)。
-4.  结果将保存在 `problem2/result/` 目录下，按案例分类存储 (例如 `result/Quad4_50x50/`)。
+4.  结果将保存在 `result/problem2/` 目录下，按案例分类存储 (例如 `result/problem2/Quad4_50x50/`)。
 
 ---
 
@@ -66,12 +64,12 @@
 CSM_Assignment2/
 ├── README.md                # 项目说明文档
 ├── Assignment_discription/  # 作业详细说明和图片
-├── problem1/                # 问题 1 文件夹
-│   ├── src/                 # 源代码 (main.m, K_matrix.m 等)
-│   └── result/              # 结果输出
-└── problem2/                # 问题 2 文件夹
-    ├── src/                 # 源代码
-    └── result/              # 结果输出
+├── result/                  # 结果输出目录
+│   ├── problem1/            # 问题 1 结果
+│   └── problem2/            # 问题 2 结果
+└── src/                     # 源代码目录
+    ├── problem1/            # 问题 1 源码 (main.m, K_matrix.m 等)
+    └── problem2/            # 问题 2 源码
 ```
 
 ### 通用代码架构

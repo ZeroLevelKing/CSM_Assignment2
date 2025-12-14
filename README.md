@@ -66,7 +66,7 @@
 ## 实验报告 (Report)
 
 项目包含一份完整的 LaTeX 实验报告，位于 `report/` 目录下。
-*   **文件**: `report/report.tex`
+*   **文件**: `report/report.pdf`
 *   **内容**: 包含问题描述、理论公式、实现细节、结果展示以及与 Abaqus 的对比验证。
 *   **编译**: 使用支持中文的 LaTeX 编译器（如 XeLaTeX）编译 `report.tex` 即可生成 PDF 报告。
 

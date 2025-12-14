@@ -135,13 +135,64 @@ F_e = \int_{\Omega_e} N^T q(x,y) \, dA
 \end{equation}
 
 \subsection{不同网格密度下的计算}
-使用三种网格密度进行了计算：
+为了研究网格收敛性，使用三种不同的网格密度进行了计算：
 \begin{itemize}
     \item 粗网格: $5 \times 5$ 单元。
     \item 中等网格: $10 \times 10$ 单元。
     \item 细网格: $50 \times 50$ 单元。
 \end{itemize}
-测试了 Tri3 和 Quad4 两种单元。结果表明，随着网格密度的增加，中心挠度收敛于一个稳定值。在相同节点数下，Quad4 单元通常比 Tri3 单元表现出更快的收敛速度。
+
+图 \ref{fig:mesh_convergence} 展示了使用 Quad4 单元在不同网格密度下的挠度分布。可以看出，随着网格加密，挠度场变得更加平滑，且中心最大挠度值逐渐收敛。粗网格 ($5 \times 5$) 虽然能捕捉到整体变形趋势，但在极值点和边缘处的精度较低。
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../result/problem2/Quad4_5x5/1_Deflection_w.png}
+        \caption{Quad4 $5 \times 5$}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../result/problem2/Quad4_10x10/1_Deflection_w.png}
+        \caption{Quad4 $10 \times 10$}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../result/problem2/Quad4_50x50/1_Deflection_w.png}
+        \caption{Quad4 $50 \times 50$}
+    \end{minipage}
+    \caption{不同网格密度下的挠度云图对比 (Quad4)}
+    \label{fig:mesh_convergence}
+\end{figure}
+
+同样地，图 \ref{fig:mesh_convergence_tri3} 展示了使用 Tri3 单元在不同网格密度下的挠度分布。
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../result/problem2/Tri3_5x5/1_Deflection_w.png}
+        \caption{Tri3 $5 \times 5$}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../result/problem2/Tri3_10x10/1_Deflection_w.png}
+        \caption{Tri3 $10 \times 10$}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../result/problem2/Tri3_50x50/1_Deflection_w.png}
+        \caption{Tri3 $50 \times 50$}
+    \end{minipage}
+    \caption{不同网格密度下的挠度云图对比 (Tri3)}
+    \label{fig:mesh_convergence_tri3}
+\end{figure}
+
+综合对比 Tri3 和 Quad4 两种单元的结果表明，随着网格密度的增加，中心挠度均收敛于一个稳定值。在相同节点数下，Quad4 单元通常比 Tri3 单元表现出更快的收敛速度和更高的精度。
 
 \subsection{结果与验证}
 \subsubsection{MATLAB 仿真结果}
@@ -180,11 +231,11 @@ F_e = \int_{\Omega_e} N^T q(x,y) \, dA
     \label{tab:comparison}
     \begin{tabular}{|c|c|c|c|}
         \hline
-        \textbf{指标} & \textbf{MATLAB (Quad4)} & \textbf{Abaqus (S4R)} \\
+        \textbf{指标} & \textbf{MATLAB (Quad4)} & \textbf{Abaqus (S4R)} & \textbf{相对误差 (\%)} \\
         \hline
-        中心挠度 $w_{max}$ (m) & -1.088290e-03 &  -1.08737e-03  \\
+        中心挠度 $w_{max}$ (m) & -1.088290e-03 &  -1.08737e-03 & 0.085\% \\
         \hline
-        最大 Von Mises 应力 (Pa) &   1.026135e+08  & 1.02514e+08 \\
+        最大 Von Mises 应力 (Pa) &   1.026135e+08  & 1.02514e+08 & 0.097\% \\
         \hline
     \end{tabular}
 \end{table}
@@ -208,7 +259,7 @@ F_e = \int_{\Omega_e} N^T q(x,y) \, dA
     \label{fig:3d_comparison}
 \end{figure}
 
-计算结果与 abaqus 存在一定差异，可能原因包括：
+总体上看计算结果与 abaqus 高度一致，但仍存在一定差异，可能原因包括：
 \begin{enumerate}
     \item \textbf{单元类型差异}: 虽然 S4R 单元与 Quad4 Mindlin 板单元类似，但在数值实现细节上可能存在差异。
     \item \textbf{积分方案}: Abaqus 使用了厚度方向的 Simpson 积分，而 MATLAB 代码中未明确考虑厚度积分，可能导致结果偏差。

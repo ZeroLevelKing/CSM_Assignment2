@@ -324,3 +324,43 @@ TSWLatexianTemp*
 # option is specified. Footnotes are the stored in a file with suffix Notes.bib.
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
+
+## MATLAB generated files:
+*.asv
+*.m~
+*.mlappbak
+*.autosave
+
+## MATLAB compiled/build files:
+*.mex*
+*.p
+*.prj
+packagedApp/
+deploy/
+
+## MATLAB cache and temporary files:
+mlcache/
+simcache/
+codegen/
+slprj/
+
+## MATLAB published output:
+html/
+
+## MATLAB logs and crash dumps:
+*.matlab_crash_dump.*
+diary
+
+## OS generated files:
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## Large data files (optional):
+# *.mat
+# *.csv
+# *.xlsx
+
+## AI Configuration
+.github/copilot-instructions.md
+

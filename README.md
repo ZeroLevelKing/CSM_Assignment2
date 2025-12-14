@@ -57,8 +57,9 @@
 4.  结果将保存在 `result/problem2/` 目录下，按案例分类存储 (例如 `result/problem2/Quad4_50x50/`)。
 
 ### 结果验证
-为了方便与商业软件（如 Abaqus）进行结果对比，提供了一个辅助脚本：
-*   `src/problem2/get_comparison_values.m`: 自动从 `Quad4_50x50` 的结果文件中提取最大挠度和最大 Von Mises 应力值。
+为了方便与商业软件（如 Abaqus）进行结果对比，本项目提供了以下资源：
+1.  **辅助脚本**: `src/problem2/get_comparison_values.m`，用于自动从 `Quad4_50x50` 的结果文件中提取最大挠度和最大 Von Mises 应力值。
+2.  **Abaqus 模型**: `result/abaqus/` 目录下提供了用于验证的 Abaqus 模型文件 (`.cae`) 和日志文件 (`.jnl`)。读者可以直接打开这些文件查看边界条件、载荷施加（Analytical Field）及网格设置，复现验证结果。
 
 ---
 
@@ -80,6 +81,7 @@ CSM_Assignment2/
 ├── report/                  # 实验报告 (LaTeX)
 │   └── report.tex
 ├── result/                  # 结果输出目录
+│   ├── abaqus/              # Abaqus 验证模型文件
 │   ├── problem1/            # 问题 1 结果
 │   └── problem2/            # 问题 2 结果
 └── src/                     # 源代码目录

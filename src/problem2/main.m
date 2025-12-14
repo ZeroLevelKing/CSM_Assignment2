@@ -28,7 +28,10 @@ properties(4)=k;
 
 % Load Parameters
 % Amplitude is negative (-1e6) to apply a downward force (in -z direction)
-LoadParams = [-1e6, 0.1, 0.5, 0.5]; 
+% Assignment Formula: F = 10^6 * (1/(sigma*sqrt(2*pi))) * exp(...)
+sigma = 0.1;
+Amp = -1e6 * (1 / (sigma * sqrt(2*pi)));
+LoadParams = [Amp, sigma, 0.5, 0.5]; 
 
 for type_idx = 1:length(element_types)
     flag = element_types(type_idx);

@@ -56,6 +56,19 @@
     *   自动测试不同的网格密度 (如 5x5, 10x10, 50x50)。
 4.  结果将保存在 `result/problem2/` 目录下，按案例分类存储 (例如 `result/problem2/Quad4_50x50/`)。
 
+### 结果验证
+为了方便与商业软件（如 Abaqus）进行结果对比，提供了一个辅助脚本：
+*   `src/problem2/get_comparison_values.m`: 自动从 `Quad4_50x50` 的结果文件中提取最大挠度和最大 Von Mises 应力值。
+
+---
+
+## 实验报告 (Report)
+
+项目包含一份完整的 LaTeX 实验报告，位于 `report/` 目录下。
+*   **文件**: `report/report.tex`
+*   **内容**: 包含问题描述、理论公式、实现细节、结果展示以及与 Abaqus 的对比验证。
+*   **编译**: 使用支持中文的 LaTeX 编译器（如 XeLaTeX）编译 `report.tex` 即可生成 PDF 报告。
+
 ---
 
 ## 项目结构
@@ -64,12 +77,17 @@
 CSM_Assignment2/
 ├── README.md                # 项目说明文档
 ├── Assignment_discription/  # 作业详细说明和图片
+├── report/                  # 实验报告 (LaTeX)
+│   └── report.tex
 ├── result/                  # 结果输出目录
 │   ├── problem1/            # 问题 1 结果
 │   └── problem2/            # 问题 2 结果
 └── src/                     # 源代码目录
     ├── problem1/            # 问题 1 源码 (main.m, K_matrix.m 等)
     └── problem2/            # 问题 2 源码
+        ├── main.m
+        ├── get_comparison_values.m  # 结果提取脚本
+        └── ...
 ```
 
 ### 通用代码架构
